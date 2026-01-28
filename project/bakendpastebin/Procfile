@@ -1,0 +1,2 @@
+web: gunicorn bakendpastebin.wsgi --log-file -
+release: python bakendpastebin/manage.py migrate
