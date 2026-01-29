@@ -1,5 +1,8 @@
 {
     "build": {
         "builder": "dockerfile"
+    },
+    "deploy": {
+        "startCommand": "cd bakendpastebin && python manage.py migrate && gunicorn bakendpastebin.wsgi:application --bind 0.0.0.0:8000"
     }
 }
