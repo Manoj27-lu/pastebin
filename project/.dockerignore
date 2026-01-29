@@ -1,0 +1,13 @@
+.git
+.gitignore
+*.md
+node_modules
+.npm
+pastebin
+env
+venv
+__pycache__
+*.pyc
+.DS_Store
+.env
+.env.local

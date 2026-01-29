@@ -3,28 +3,24 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies for mysqlclient and other packages
 RUN apt-get update && apt-get install -y \
-    nodejs npm \
+    gcc \
+    default-libmysqlclient-dev \
+    pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install Python dependencies
-COPY bakendpastebin/requirements.txt ./bakendpastebin/
+# Copy backend files
+COPY bakendpastebin/ ./bakendpastebin/
+
+# Install Python dependencies
 RUN pip install --no-cache-dir -r bakendpastebin/requirements.txt
 
-# Install Node dependencies
-COPY pastebin/package*.json ./pastebin/
-WORKDIR /app/pastebin
-RUN npm install
+# Expose port
+EXPOSE 8000
 
-# Copy project files
-COPY . /app
+# Set working directory to backend
+WORKDIR /app/bakendpastebin
 
-# Set working directory back to root
-WORKDIR /app
-
-# Expose ports
-EXPOSE 8000 3000
-
-# Run both servers
-CMD ["sh", "-c", "cd bakendpastebin && python manage.py migrate && python manage.py runserver 0.0.0.0:8000 &  cd ../pastebin && npm start"]
+# Run migrations and start gunicorn
+CMD ["sh", "-c", "python manage.py migrate && gunicorn bakendpastebin.wsgi:application --bind 0.0.0.0:8000 --log-file -"]
